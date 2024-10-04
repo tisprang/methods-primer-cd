@@ -1,0 +1,2012 @@
+---
+title: "METHODS PRIMER -- DAY 2"
+author: "Timo Sprang, M.A."
+babel-lang: ngerman
+format:
+    pptx:
+        reference-doc: ../template.pptx
+fig-dpi: 300
+
+bibliography: ../refs.bib
+csl: ../apa.csl
+---
+
+```{r}
+#| label: setup
+
+library(truncnorm)
+library(faux)
+library(dplyr)
+library(ggplot2)
+library(gufunctions)
+library(rnaturalearth)
+library(vdemdata)
+library(ggarchery)
+library(marginaleffects)
+library(quanteda)
+library(quanteda.textplots)
+library(tidyr)
+
+set.seed(1337)
+theme_set(theme_gu())
+```
+
+## TODAY'S SCHEDULE
+
+tabelle heutiges programm
+
+## HOW FAR WE'VE COME
+
+grafik mit bisherigen schritten
+schritte rekapitulieren und diskutieren wie es weitergeht: Datensammlung
+
+## COLLECTING *DATA*
+
+- Data is behind any empirical social study
+	- So what exactly is it?
+- *A* data is a piece of information; a fact
+	- Data (plural) is a collection of information
+- Empirical research is based on experience *per definitionem* 
+	- In other words: It is based on data
+- Data collection is the process of *measuring* experience
+
+## HOW TO COLLECT DATA
+
+:::: {.columns}
+
+::: {.column width="50%"}
+- Three popular modes of data collection
+	- Most collection methods fall somewhere along this spectrum
+- Within these modes, collection methods can be quantitative or qualitative
+- Qualitative research: Interpretation and description from a holistic standpoint 
+- Quantitative research: (Statistical) evaluation of specific assumptions
+- Shape of data varies accordingly
+:::
+
+::: {.column width="50%"}
+GRAFIK ZU SURVEY CONTENTANALYSIS BEOBACHTUNG mit Abfrage welche
+:::
+
+::::
+
+## QUANTITATIVE DATA
+
+:::: {.columns}
+
+::: {.column width="50%"}
+Quantitative data often looks like this:
+
+- One row per case
+- One column per trait (variable/constant)
+- Cells are condensed pieces of information
+	- Processes behind data collection are largely hidden
+- Analysis usually with applied statistics 
+	- Summary of large amounts of (numerical) data
+
+```{r}
+data <- data.frame(
+	id = seq(1000001, 1005000),
+	state = sample(c(
+		rep("Schleswig-Holstein", 300),
+		rep("Mecklenburg-Western Pomerania", 163),
+		rep("Lower Saxony", 816),
+		rep("Bremen", 69),
+		rep("Hamburg", 191),
+		rep("Brandenburg", 258),
+		rep("Berlin", 378),
+		rep("Saxony-Anhalt", 218),
+		rep("North Rhine-Westfalia", 1819),
+		rep("Hesse", 642),
+		rep("Thuringia", 212),
+		rep("Saxony", 409),
+		rep("Rhineland-Palatinate", 417),
+		rep("Saarland", 99),
+		rep("Baden-Württemberg", 1133),
+		rep("Bavaria", 1344)
+	), 5000, replace = TRUE),
+	birthyear = round(rtruncnorm(n = 5000, a = 1920, b = 2006, mean = 1960, sd = 35)),
+	gender = sample(c(rep("male", 49), rep("female", 49), rep("other", 2)), 5000, replace = TRUE),
+	swd = sample(seq(1,7), 5000, replace = TRUE),
+	lr = sample(seq(1,11), 5000, replace = TRUE),
+	vote = rbinom(5000, 1, .75),
+	income = round(rtruncnorm(n = 5000, a = 563, b = 250000, mean = 3500, sd = 1800)),
+	pid = sample(c(
+		rep("CDU/CSU", 31),
+		rep("AfD", 18),
+		rep("SPD", 16),
+		rep("Greens", 11),
+		rep("BSW", 8),
+		rep("FDP", 5),
+		rep("The Left", 4), 
+		rep("None", 40)),
+		5000, replace = TRUE
+	),
+	pop1 = sample(seq(1,5,1), 5000, replace = TRUE),
+	pop2 = sample(seq(1,5,1), 5000, replace = TRUE),
+	pop3 = sample(seq(1,5,1), 5000, replace = TRUE),
+	pop4 = sample(seq(1,5,1), 5000, replace = TRUE),
+	eco1 = sample(seq(1,5,1), 5000, replace = TRUE),
+	eco2 = sample(seq(1,5,1), 5000, replace = TRUE),
+	eco3 = sample(seq(1,5,1), 5000, replace = TRUE),
+	eco4 = sample(seq(1,5,1), 5000, replace = TRUE)
+)
+```
+
+:::
+
+::: {.column width="50%"}
+![](res/quanti_data.png)
+:::
+
+::::
+
+## QUALITATIVE DATA
+
+:::: {.columns}
+
+::: {.column width="50%"}
+Qualitative data can, for instance, look like this:
+
+- Case is not reduced to its key traits
+	- Traits are evaluated/interpreted within context
+- Analysis via interpretation and description
+	- Often focused on specific cases
+
+:::
+::: {.column width="50%"}
+![](res/quali_data.jpg)
+:::
+
+::::
+
+## QUALITATIVE AND QUANTITATIVE DATA COLLECTION
+
+- Not only data analysis but also collection method differs between qualitative and quantitative
+- However, the methods still usually comply with the categorization offered above
+- Your turn: Draw one qualitative and one quantitative collection method and answer these questions
+	1. How do you collect data with this method?
+	2. What type of data do you typically arrive at?
+	3. Which strengths does this method have?
+	4. What are the risks and weaknesses associated with it?
+	5. Which research questions can you address with this method? Find an example!
+- Present your methods to other students
+
+## COLLECTION METHODS -- OVERVIEW
+
+grafik mit überblick über gängige methoden
+
+## HOW TO PICK YOUR COLLECTION METHOD
+
+- Your collection method should leave you with data that corresponds to your research question
+- Valid answers are often powered by diverse data
+- Qualitative and quantitative data can be combined to answer your research question
+	- This *triangualtion* often offers the most valid research
+- The fit between research question and employed data is an important criterion of good research
+
+## GOOD DATA
+
+:::: {.columns}
+
+::: {.column width="50%"}
+- Good data is powered by instruments that are **valid** and **reliable**
+
+- Reliable instruments return the same values when applied repeatedly
+- Valid instruments measure what they are supposed to measure with no *systematic* error
+
+Image source: @Field2018
+
+:::
+::: {.column width="50%"}
+![](res/rel_val.png)
+:::
+
+::::
+
+## GOOD DATA II
+
+Good data is also *complete* &rarr; no missingness
+
+- Bad but manageable: Missing completely at random
+	- Meaning: Missingness entirely random
+	- Example: Some random participants' questionnaires have been lost
+- Problematic: Missing at random
+	- Meaning: Missingness associated to some other (measured) trait
+	- Example: Low political interest associated with low response rates to political questions
+- Terrible, worst case: Missing not at random
+	- Meaning: Missingness associated to a pattern in the trait itself, or non-observed traits
+	- Example: Refusal to respond to question about last vote if voter of radical party (social desirability)
+
+- Any coping strategy can only milden the effects &rarr; strive for complete data!
+
+## BUT WHAT ABOUT EXPERIMENTS?
+
+- Experiments on their own do not qualify as a mode of data collection
+- They represent a design choice that can or cannot be made in any of the modes mentioned
+- Experimental designs are frequently employed in the most reputable research in the field
+	- Why? **Causality!**
+
+## CORRELATION AND CAUSALITY
+
+:::: {.columns}
+
+::: {.column width="50%"}
+seite mit memes
+
+- Correlation does **not** imply causality
+- There is an entire [web site](https://www.tylervigen.com/spurious-correlations) dedicated to graphs showing this
+
+https://shorturl.at/nHI00
+https://shorturl.at/dMyYz
+https://tinyurl.com/3f3esu46
+https://shorturl.at/lgf6G
+https://shorturl.at/55gVu
+https://shorturl.at/FlV3t
+
+:::
+::: {.column width="50%"}
+![](res/cc1.jpg)
+:::
+
+::::
+
+## THE CONCEPT OF CORRELATION
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+- Correlation is the result of two phenomena *co-varying*
+- The observations we make regarding these phenomena are related
+- Functionally, there will be patterns between the levels of the traits of interest
+	- These patterns can be diverse
+	- The stronger a pattern, the stronger the correlation
+
+but it's often a rather strong hint
+
+korrelationsmeme reinhauen
+https://shorturl.at/U5rr5
+
+:::
+::: {.column width="50%"}
+
+```{r}
+rbind(
+	data.frame(
+		xv = seq(0,5, .25)
+	) |>
+	mutate(
+		yv = xv,
+		type = "Perfect positive"
+	),
+	rnorm_multi(
+        n = 500,
+        mu = c(5, 5),
+        sd = c(4, 4),
+        r = c(-.8),
+        varnames = c("xv", "yv")
+    ) |>
+	mutate(type = "Strong negative"),
+	rnorm_multi(
+        n = 500,
+        mu = c(5, 5),
+        sd = c(4, 4),
+        r = c(.25),
+        varnames = c("xv", "yv")
+    ) |>
+	mutate(type = "Weak positive"),
+	data.frame(
+		xv = seq(0,2,1/250) + runif(500, -1, 1),
+		type = "U-Shaped; curvilinear"
+	) |>
+	mutate(yv = ((1-xv)^2) + runif(500, -.05, .05))
+) |>
+ggplot(aes(xv, yv)) +
+	facet_wrap(~type, scales = "free") +
+	geom_point() +
+	scale_x_continuous(name = "") +
+	scale_y_continuous(name = "") +
+	theme(axis.text = element_blank())
+```
+
+:::
+
+::::
+
+## THE CONCEPT OF CAUSALITY
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+- A *causal* relationship between two variables is one where one variable *causes* an *effect* in the other one
+- Most of the time, we have clear assumptions about cause and effect
+- Accordingly, our goal then is to identify whether these assumptions hold
+- Really complex task!
+	- Conventional data often insufficient for this task
+		- Rarely meets all *conditions* of causality
+
+https://shorturl.at/u3CpB
+
+:::
+::: {.column width="50%"}
+
+![](res/causality.jpeg)
+
+:::
+
+::::
+
+## CONDITIONS OF CAUSALITY
+
+1. Correlation
+	- If concepts of interest do not co-vary, hard to explain why we would observe an effect for the cause
+2. Chronological sequence
+	- Effect always has to follow the cause [but see @Taylor1962]
+3. No influence by third variables
+	- Bound to produce false information otherwise
+4. Strong theoretical justification
+	- Need strong reason to assume a causal relationship
+
+## CAUSALITY IN EMPIRICAL RESEARCH
+
+- In most cases, our research is at least based on an abstract idea about causality
+- Published research still tends to avoid claims about causality
+	1. *Direction of causality is not clear*
+	2. *Hard to infer causality from this analysis*
+	3. *Data at hand does not allow for direct causal inference*
+- So is causality more of a theoretical phenomenon?
+	&rarr; No, not at all!
+
+## DESCRIPTIVE AND CAUSAL-ANALYTICAL RESEARCH
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+**Descriptive Research**
+
+- No direct claims about causation
+- Interested in (single values), frequencies, and correlations
+- Typical questions:
+	1. How high is $Y$?
+	2. Is $X$ related to $Y$?
+- Nothing wrong with this type of research
+	- In fact some of the most important contributions to our knowledge can be classified as descriptive research
+	- For instance, we would know much less about economic inequality without Solt's [-@Solt2020] SWIID
+
+:::
+::: {.column width="50%"}
+
+**Causal-analytical research**
+
+- Claims and tests causal relationship
+- Interested in $X$'s effect on $Y$
+- Typical question: Does $X$ have an influence on $Y$?
+- Dramatic increase in popularity as of late
+- Requires specific tools
+
+:::
+
+::::
+
+## BACK TO EXPERIMENTS
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+- Experiments are supposed to be the silver bullet regarding causal identification... Why?
+- What is a *causal effect*?
+	- Let us say we are interested in $X$'s effect on $Y$
+	- $X$ is either the case ($i = 1$) or not ($i = 0$)
+	- The causal effect of $X$ on $Y$ is accordingly $Y_{i=1} - Y_{i=0}$
+- Substantially, the causal effect is the difference in the level of $Y$ that we observe between two worlds where everything is the same, except for the level of $X$
+- Most chemical experiments allow for this type of control
+	- For instance, catalyst application to one of two otherwise identical test tubes, test of reaction speed
+		&rarr; *Controlled experiment*
+- Experiments in social science rarely do
+	- Instead: **Randomized experiments**
+
+https://shorturl.at/QjCnL
+:::
+::: {.column width="50%"}
+![](res/chemistry.png)
+:::
+
+::::
+
+## WHY IS CONVENTIONAL DATA INSUFFICIENT?
+
+- Non-experimental data rarely allows for valid causal inference -- Why?
+- Reviewing conditions of causal identification clarifies:
+	1. Correlation &check;
+		- Possible to identify correlation
+	2. Chronological sequence ~
+		- Limited in standard cross-section data; (partially) possible with panel/time-section data
+	3. No influence by third variables &cross;
+		- Possible to measure and control for (some) third variables; (almost) never all of them
+	4. Strong theoretical justification &check;
+		- Not a data problem
+- Why do we struggle with limiting the influence of third variables in non-experimental data?
+	&rarr; Let's talk soup!
+
+## SOUP AS AN EXAMPLE
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+- We are interested in how onions influence how people rate the taste of a soup
+	- A causal relationship: Onions &rarr; Taste of soup
+- With non-experimental data, we could employ a survey
+	- Items on usage of different ingredients and taste of soup
+- Finally, we could analyze these data, using taste as DV and onions as IV
+- What is problematic about this approach?
+	- To accurately estimate the effect, we need to control for any other ingredient
+	- Moreover, we need to rule out pre-existing preferences of our respondents
+		- If only people that like the taste of onions use it, we are bound to find a (biased) positive effect!
+:::
+::: {.column width="50%"}
+GRAFIK MIT VERSCHIEDENEN SUPPEN UND NICHT KONTROLLIERTEN PERSONEN
+:::
+
+::::
+
+## EXPERIMENTAL SOUP
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+- Randomized experiments can help us in accurately estimating this effect
+	1. We do not have to know about all possible ingredients and do not have to worry about missing an important one
+		- Instead, we can just give a bowl of the same soup to everyone
+		- However, one group receives soup with onions and the other one does not
+	2. (Successful) Randomization rules out that the effect is based on pre-existing preferences (or other respondent characteristics)
+		- Potential influences are balanced between groups, isolating the effect of interest
+- Randomized experiments allow for control of the cause (treatment)
+	- Other influences can be ruled out
+	- Chronological order is in hand of researcher and can be controlled specifically (repeated measurement)
+:::
+::: {.column width="50%"}
+GRAFIK MIT EINER SUPPE MIT VERSCHIEDENEN SCHÜSSELN UND RANDOMISATION
+:::
+
+::::
+
+## QUALITY OF EXPERIMENTS
+
+- Controlling external factors usually only possible in controlled lab environment
+- Experimental validity has to be assessed accordingly:
+	1. Internal validity: Do the findings provide evidence within specific study?
+	2. External validity: Do the findings provide evidence beyond specific study?
+- Both criteria are usually in a trade-off
+	- By controlling other circumstances, internal validity will increase -- at the cost of external validity
+	- By performing the study in a more *natural* environment, external validity will increase -- at the cost of internal validity
+
+## TAKEAWAYS
+
+- Experiments often produce the most powerful claims to causal inference
+- They allow for treatment manipulation and randomized control of confounders
+- In many settings, they are unfortunately not applicable
+	- For instance, we can hardly manipulate the wealth of a country to test modernization theory
+- Some specific analysis methods try to leverage the logic of experimental causal inference using conventional data
+	- Often these methods produce quite valid results
+	- Understanding these methods profits from understanding the logic of experimental designs
+	- Examples include discontinuity designs (specific cut-offs), instrumental variables, difference in difference designs
+
+## DATA COLLECTED -- WHAT TO DO WITH IT?
+
+grafik bis data analysis
+
+## WHAT IS DATA ANALYSIS AND HOW DO YOU DO IT?
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+- In data analysis, we test our assumptions or ideas
+- Much of this is done using computer software
+	- Helps to systematize findings and in managing large amounts of data
+- Applied in qualitative (esp. MAXQDA) and quantitative (e.g., R, Stata, SPSS, UCINET, Python, etc.) research
+- Focus today on quantitative analytical methods
+:::
+::: {.column width="50%"}
+LOGOS VON STATISTIK SOFTWARE
+:::
+
+::::
+
+## STATISTICAL SOFTWARE
+
+- Although some statistical analysis can be performed analogously, most methods profit greatly from the use of statistical software
+- Basic analyses can even be performed in Excel, more flexible alternatives include:
+	1. [R](https://www.r-project.org/) is an open source programming language typically used within [Posit's RStudio](https://posit.co/download/rstudio-desktop/)
+		- It is open source, free to use, and flexibly integrated into popular IDEs like [Microsoft's VSCode](https://code.visualstudio.com/)
+		- [Posit's Quarto](https://quarto.org/) is one of the most exciting projects concerning (academic) writing/publishing with great integration for R
+			- In fact, all of the slides for this primer were created using it and the relevant code is publicly available via my [GitHub](https://github.com/tisprang/methods-primer-cd)
+	2. [Stata](https://www.stata.com/) is a statistical language and software developed by Stata Corp.
+		- It is widely popular for its focussed syntax
+		- However, licenses are expensive and you need one to use it on your own devices
+	3. [SPSS](https://www.ibm.com/de-de/products/spss-statistics) by IBM has been available since 1968
+		- Known for its powerful user interface, its syntax is far more complex
+		- Also one of the more expensive choices if you want to run it on your own device (however, see [PSPP](https://www.gnu.org/software/pspp/))
+- There are many other universal tools (e.g., [SAS](https://www.sas.com/de_de/software/stat.html)) and languages (see esp. [Python](https://www.python.org/) and [Julia](https://julialang.org/))
+	- You are strongly advised to invest into learning at least one of them, as complex statistical analysis is rather impossible without it
+
+## SPECIFIC APPLICATIONS
+
+- Certain analytical methods come with their own *industry standard* software
+- Two examples:
+	1. Social network analysis is often done in [UCINET](https://sites.google.com/site/ucinetsoftware/home)
+	2. [MPlus](https://www.statmodel.com/) is the most powerful tool regarding Structural Equation Modeling
+- More general use variations of these are often integrated (or available as free-to-use packages) in universal software/languages
+
+## ESTIMATIONS, ERRORS ET AL.
+
+- The usage of statistical software is especially useful, since we are usually interested in questions that exceed the data we analyze
+- Remember that we usually only analyze a sample representing our population
+	- However, limiting our conclusions to the sample is unattractive
+- Accordingly, we try to *infer* from our sample to the population
+	&rarr; Distinction between descriptive and inferential statistics
+
+## DESCRIPTIVE AND INFERENTIAL STATISTICS
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+**Descriptive statistics**
+
+- Scope of claims: Limited to available data
+	- Thus, usually limited to sample
+	- Claims for population only when observed
+- Basis for claims: Direct measurement
+- Results: Certain as long as measurement is accurate
+- Typical statement: "There is a difference in $Y$ between different groups of $X$ *in the observed data*"
+:::
+::: {.column width="50%"}
+**Inferential statistics**
+
+- Scope of claims: Population, even when sample-based
+- Basis for claims: Estimation
+- Results: Subject to uncertainty
+	- Expressed in errors, ought to be communicated
+- Typical statement: "There is a difference in $Y$ between different groups of $X$ *and it is likely to be systematic and not the product of random error*"
+:::
+
+::::
+
+## WHY ESTIMATION AND WHY UNCERTAINTY
+
+- The usage of (representative) samples bears the question of how representative they actually are
+- By virtue of us knowing only about our sample, our only chance at giving an assessment of this, is based on the information we have about our sample
+- When generalizing from our sample to the population, we should always specify the level of uncertainty
+
+## STATISTICAL INFERENCE
+
+- We are interested in characteristics (parameters) of our population
+	- We know their equivalent in the sample (e.g., the mean value)
+- The difference between our sample and population parameter is the error
+- Based on our sample information, we estimate this population parameter
+	- The more cases we have sampled, and the clearer the pattern we observe (the less dispersion in our observations) the more certain our estimation is
+- Based on sample size and dispersion parameters, we calculate the error of our estimation
+- Using this error, we can specify a region of certainty
+	- Often expressed in confidence intervals
+
+## CONSEQUENCES OF UNCERTAINTY
+
+- The more certain we are concerning our estimations, the more certain we can be that what we found out is not just a feature of our sample
+- When generalizing, communicating uncertainty is not only good practice, but indispensable
+	- Not only true for regression and the like, but for any statistical analysis in which we generalize
+- Neither substantial aspects (like effect size) nor estimation certainty should ever be assessed without accounting for the other one
+
+## ANALYSING DATA
+
+- Generally, we can differentiate between three different types of analysis:
+	1. Univariate analysis: You only look at a specific characteristic of interest, typically investigating its (average) level, or frequencies of its levels
+		- Typical question: How high is economic inequality in the world?
+	2. Bivariate analysis: Analysis involves two different traits and focusses on their empirical relationship
+		- Typical question: How are economic inequality and tax rates related?
+	3. Multivariate analysis: Your analysis involves a multitude of different traits, trying to identify systems of relationships
+		- Typical question: Which factors influence a country's level of economic inequality?
+
+## UNIVARIATE ANALYSIS
+
+- Univariate analysis is usually concerned with the observed level of one trait/variable
+- Typical (quantitative) analysis methods include:
+	1. Frequency analysis
+	2. Analysis of measures of central tendency
+
+## FREQUENCY ANALYSIS
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+- Frequency analysis is rather self-evident
+	&rarr; How often do we observe which value of our variable of interest?
+- Presenting results is straightforward:
+	1. Table format
+		- R: `table(data$variable)`
+		- Stata: `tab variable`
+	2. Graphically, e.g., as bar chart
+		- R: `data |>
+			ggplot(aes(variable)) +
+			geom_bar()`
+		- Stata: `graph bar (count), over(variable)`
+
+Data source: @Solt2020
+:::
+::: {.column width="50%"}
+
+```{r}
+#| eval: FALSE
+
+swiid_sample <- read.csv("res/swiid.csv") |>
+	filter(year == 2020) |>
+	mutate(Gini = case_when(
+		gini_disp < 30 ~ "<30",
+		gini_disp >= 30 & gini_disp < 40 ~ "<40",
+		gini_disp >=40 & gini_disp < 50 ~ "<50",
+		gini_disp >=50 & gini_disp < 60 ~ "<60",
+		gini_disp > 60 ~ ">60"
+	))
+
+table(swiid_sample$Gini)
+```
+
+```{r}
+#| fig-height: 4
+#| fig-width: 6
+
+read.csv("res/swiid.csv") |>
+	filter(year == 2020) |>
+	mutate(Gini = case_when(
+		gini_disp < 30 ~ "<30",
+		gini_disp >= 30 & gini_disp < 40 ~ "<40",
+		gini_disp >=40 & gini_disp < 50 ~ "<50",
+		gini_disp >=50 & gini_disp < 60 ~ "<60",
+		gini_disp > 60 ~ ">60"
+	)) |>
+	ggplot(aes(Gini)) +
+		geom_bar() +
+		scale_x_discrete(expand = c(0,0)) +
+		scale_y_continuous(name = "", expand = expansion(mult = c(0, .1)))
+```
+:::
+
+::::
+
+## ANALYSIS OF MEASURES OF CENTRAL TENDENCY
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+- High-level variables (interval/ratio(/ordinal) scaling) allow for analysis of measures of central tendency
+- Typical metrics we are interested in include:
+	- Mode: Value most often observed (NOIR)
+	- Median: Value at which we split observations into two halves (OIR)
+	- Mean: Average value ((O)IR)
+- Often we are also interested in metrics of dispersion (variance, standard deviation, inter-quartile range, ...)
+- Results can be presented in text:
+	- R: `summary(data$variable)`
+	- Stata: `sum variable`
+- Various ways to present graphically
+	- A boxplot, for example, provides lots of information in a single graphic
+
+Data source: @Solt2020
+:::
+::: {.column width="50%"}
+
+```{r}
+#| fig-height: 4
+#| fig-width: 6
+
+read.csv("res/swiid.csv") |>
+	filter(year == 2020) |>
+	ggplot(aes(0, gini_disp)) +
+		geom_boxplot(outlier.colour = "red", size = 2) +
+		geom_jitter(width = .05, size = 2.5) +
+		stat_summary(
+			fun = mean, 
+			geom = "point", 
+			shape = 4, 
+			colour = "red",
+			size = 10,
+			stroke = 3
+		) +
+		scale_x_discrete(name = "", labels = NULL) +
+		scale_y_continuous(name = "Gini of disposable income, 2020")
+```
+:::
+
+::::
+
+## ESTIMATIONS OF POPULATION MEANS
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+- Even performing this descriptive form of analysis, we can estimate a population's equivalent value
+- For example, we might be interested in the average Gini coefficient in the world
+	- Limited resources only allow evaluation of a country sample
+- Using information on our sample variance and size, we can calculate the region of certainty concerning the 'real' mean value
+- Strictly speaking, a $95\%$ confidence interval does not offer us inclusion of the real value with a certainty of $95\%$
+	- Instead, if we redraw samples from the same population, confidence intervals calculated this way will include the real value in $95\%$ of cases (i.e., samples)
+	- So with a likelihood of $95\%$, our estimated confidence interval will be one of those including the real value
+
+Data source: @Solt2020
+:::
+::: {.column width="50%"}
+```{r}
+#| fig-height: 6
+#| fig-width: 9
+
+df <- data.frame()
+
+for(i in c(1:100)){
+	df <- rbind(
+		df,
+		sample_n(
+			read.csv("res/swiid.csv") |>
+				filter(year == 2007),
+			20
+		) |>
+		mutate(sample_number = i)
+	)
+}
+
+yv <- read.csv("res/swiid.csv") |>
+	filter(year == 2007) |>
+	summarise(mean = mean(gini_disp)) |>
+	as.numeric()
+
+rbind(
+	df,
+	read.csv("res/swiid.csv") |>
+		filter(year == 2007) |>
+		mutate(sample_number = 101)
+) |>
+group_by(sample_number) |>
+summarise(
+	mean = mean(gini_disp),
+	sd = sd(gini_disp),
+	n = sum(!is.na(gini_disp))
+) |>
+mutate(
+	se = sd / sqrt(n),
+	lci = ifelse(
+		sample_number == 101,
+		NA,
+		(mean - qt(1 - ((1 - 0.95) / 2), n - 1) * se)
+	),
+	uci = ifelse(
+		sample_number == 101,
+		NA,
+		mean + qt(1 - ((1 - 0.95) / 2), n - 1) * se
+	),
+	cl = case_when(
+		sample_number == 101 ~ "Population",
+		lci > yv | uci < yv ~ "Sample (off)",
+		TRUE ~ "Sample (hit)"
+	)
+) |>
+ggplot(aes(sample_number, mean, colour = cl)) +
+	geom_hline(yintercept = yv) +
+	geom_point(aes(size = cl)) +
+	geom_errorbar(aes(ymin = lci, ymax = uci), width = 0, lwd = 1) +
+	coord_flip() +
+	scale_size_manual(values = c(4, 2, 2), name = "") +
+	scale_x_continuous(
+		name = "Gini of disposable income, 2007 (Mean)",
+		expand = c(.025, .025),
+		labels = NULL
+	) +
+	scale_y_continuous(name = "") +
+	scale_colour_manual(
+		name = "",
+		values = c("black", "blue", "red")
+	)
+```
+
+:::
+
+::::
+
+
+
+## BORDERLINE CASES
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+- Why are we not performing univariate analysis when looking at how economic inequality developed?
+	- We are looking at it over the course of 'time', a second variable
+- Much in the same vain, looking at how economic inequality differs over countries is not a univariate analysis in itself
+	- We are accounting for regional variance
+- Both of these classify as bivariate analysis
+	- Disguised as univariate analysis, as we are almost exclusively interested in the level of one variable
+
+Data source: @Solt2020
+:::
+::: {.column width="50%"}
+```{r}
+#| fig-height: 2.5
+#| fig-width: 6
+
+read.csv("res/swiid.csv") |>
+	filter(country == "Germany") |>
+	ggplot(aes(year, gini_disp)) +
+		geom_line(lwd = 3) +
+		scale_x_continuous(name = "Year", expand = c(0,0)) +
+		scale_y_continuous(name = "Gini of disposable income\nGermany")
+```
+
+:::
+
+::::
+
+## bsp karte
+
+```{r}
+ne_countries(scale = "medium", returnclass = "sf") |>
+	left_join(
+		read.csv("res/swiid.csv") |>
+			rename(sovereignt = country) |>
+			filter(year == 2020) |>
+			mutate(sovereignt = case_when(
+				sovereignt == "Czech Republic" ~ "Czechia",
+				sovereignt == "United States" ~ "United States of America",
+				TRUE ~ sovereignt
+			))
+	) |>
+	ggplot(aes(fill = gini_disp)) +
+		geom_sf(col = "grey30") +
+		scale_fill_gradient(
+			name = "Gini of disposable income, 2020",
+			low = "white",
+			high = "red",
+			limits = c(20,60)
+		) +
+		scale_x_continuous(expand = c(0,0)) + 
+        scale_y_continuous(expand = c(0,0)) +
+		theme(
+			axis.text = element_blank(),
+			legend.key.width = unit(3, "cm")
+		)
+```
+
+## BIVARIATE ANALYSIS
+
+- Genuine bivariate analysis is interested in the relationship of two different variables
+- There are methods for any pairing of measurement levels, with the amount of possible methods in general being rich:
+	1. Analysis of shared frequencies
+	2. Grouped analysis of central tendency
+	3. Correlation analysis
+	4. Analysis of (co-)variance
+	5. ...
+
+## ANALYSIS OF SHARED FREQUENCIES
+
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+- How often do we observe different levels of our two variables co-occurring?
+- Easiest way to investigate this: Cross-tabulation
+	1. In R: `table(data$variable1, data$variable2)`
+	2. In Stata: `tab variable1 variable2`
+- Fancy visualization options like heatmaps
+
+Data source: @Solt2020
+:::
+::: {.column width="50%"}
+
+```{r}
+swiid_continent <- read.csv("res/swiid.csv") |>
+	filter(year == 2007) |>
+	mutate(continent = case_when(
+		country %in% c(
+			"Algeria",
+			"Angola",
+			"Benin",
+			"Botswana",
+			"Burkina Faso",
+			"Burundi",
+			"Cameroon",
+			"Cape Verde",
+			"Central African Republic",
+			"Chad",
+			"Comoros",
+			"Congo-Brazzaville",
+			"Congo-Kinshasa",
+			"Côte d'Ivoire",
+			"Djibouti",
+			"Egypt",
+			"Eswatini",
+			"Ethiopia",
+			"Gabon",
+			"Gambia",
+			"Ghana",
+			"Guinea",
+			"Guinea-Bissau",
+			"Kenya",
+			"Lesotho",
+			"Liberia",
+			"Libya",
+			"Madagascar",
+			"Malawi",
+			"Mali",
+			"Mauritania",
+			"Mauritius",
+			"Morocco",
+			"Mozambique",
+			"Namibia",
+			"Nicaragua",
+			"Niger",
+			"Nigeria",
+			"Rwanda",
+			"Senegal",
+			"Seychelles",
+			"Sierra Leone",
+			"South Africa",
+			"Sudan",
+			"São Tomé and Príncipe",
+			"Tanzania",
+			"Togo",
+			"Tunisia",
+			"Uganda",
+			"Zambia",
+			"Zimbabwe"
+		) ~ "Africa",
+		country %in% c(
+			"Afghanistan",
+			"Armenia",
+			"Azerbaijan",
+			"Bangladesh",
+			"Bhutan",
+			"Cambodia",
+			"China",
+			"Georgia",
+			"Hong Kong",
+			"India",
+			"Indonesia",
+			"Iran",
+			"Iraq",
+			"Israel",
+			"Japan",
+			"Jordan",
+			"Kazakhstan",
+			"Korea",
+			"Kyrgyzstan",
+			"Laos",
+			"Lebanon",
+			"Malaysia",
+			"Maldives",
+			"Mongolia",
+			"Nepal",
+			"Oman",
+			"Pakistan",
+			"Palestinian Territories",
+			"Philippines",
+			"Qatar",
+			"Saudi Arabia",
+			"Singapore",
+			"Sri Lanka",
+			"Syria",
+			"Taiwan",
+			"Tajikistan",
+			"Thailand",
+			"Timor-Leste",
+			"Vietnam",
+			"Yemen"
+		) ~ "Asia",
+		country %in% c(
+			"Australia",
+			"Fiji",
+			"Kiribati",
+			"Micronesia",
+			"Nauru",
+			"New Zealand",
+			"Palau",
+			"Papua New Guinea",
+			"Samoa",
+			"Solomon Islands",
+			"Tonga",
+			"Tuvalu",
+			"Vanuatu"
+		) ~ "Australia &\nOceania",
+		country %in% c(
+			"Albania",
+			"Andorra",
+			"Austria",
+			"Belarus",
+			"Belgium",
+			"Bosnia and Herzegovina",
+			"Bulgaria",
+			"Croatia",
+			"Cyprus",
+			"Czech Republic",
+			"Denmark",
+			"Estonia",
+			"Finland",
+			"France",
+			"Germany",
+			"Greece",
+			"Greenland",
+			"Hungary",
+			"Iceland",
+			"Ireland",
+			"Italy",
+			"Kosovo",
+			"Latvia",
+			"Lithuania",
+			"Luxembourg",
+			"Malta",
+			"Moldova",
+			"Montenegro",
+			"Netherlands",
+			"North Macedonia",
+			"Norway",
+			"Poland",
+			"Portugal",
+			"Romania",
+			"Russia",
+			"San Marino",
+			"Serbia",
+			"Slovakia",
+			"Slovenia",
+			"Spain",
+			"Sweden",
+			"Switzerland",
+			"Turkey",
+			"Ukraine",
+			"United Kingdom"
+		) ~ "Europe",
+		country %in% c(
+			"Anguilla",
+			"Antigua and Barbuda",
+			"Bahamas",
+			"Barbados",
+			"Belize",
+			"Canada",
+			"Costa Rica",
+			"Dominica",
+			"Dominican Republic",
+			"El Salvador",
+			"Guatemala",
+			"Haiti",
+			"Honduras",
+			"Jamaica",
+			"Mexico",
+			"Panama",
+			"Puerto Rico",
+			"St. Kitts and Nevis",
+			"St. Lucia",
+			"St. Vincent and Grenadines",
+			"United States"
+		) ~ "North America &\nCaribbean",
+		country %in% c(
+			"Argentina",
+			"Bolivia",
+			"Brazil",
+			"Chile",
+			"Colombia",
+			"Ecuador",
+			"Grenada",
+			"Guyana",
+			"Paraguay",
+			"Peru",
+			"Suriname",
+			"Uruguay",
+			"Venezuela"
+		) ~ "South America")
+	)
+```
+
+```{r}
+#| fig-height: 6
+#| fig-width: 6
+
+swiid_continent |>
+	ggplot(aes(continent, gini_disp, group = continent)) +
+		stat_bin_2d(aes(fill = after_stat(density)), bins = 5) +
+		scale_fill_gradient2(
+			name = "",
+			midpoint = .375,
+			low = "purple4",
+			mid = "springgreen4",
+			high = "yellow",
+			limits = c(0,.75),
+			labels = scales::label_percent()
+		) +
+		scale_x_discrete(
+			name = "", 
+			expand = c(0,0),
+			guide = guide_axis(angle = 45)
+		) +
+		scale_y_continuous(
+			name = "Gini of disposable income, 2007",
+			expand = c(0,0)
+		) +
+		theme(
+			legend.key.width = unit(3, "cm"),
+			panel.grid = element_blank()
+		)
+```
+
+:::
+
+::::
+
+## GROUPED ANALYSIS OF CENTRAL TENDENCY
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+- Assumption: Different values of one variable based on group membership (or trait in general)
+	- Example: Average economic inequality differs between continents
+- Examine central tendencies for each group and compare
+	- Essentially, you add an x-axis to your analysis of central tendency
+	- Pro tip: Visually, it is much easier to compare groups if you swap x and y axis
+
+Data source: @Solt2020
+:::
+::: {.column width="50%"}
+```{r}
+#| fig-height: 4
+#| fig-width: 6
+
+swiid_continent |>
+	ggplot(aes(continent, gini_disp, fill = continent, colour = continent)) +
+		geom_boxplot(size = 1, alpha = .2, outlier.shape = NA) +
+		geom_jitter(width = .2, size = 1.5) +
+		stat_summary(
+			fun = mean, 
+			geom = "point", 
+			shape = 4, 
+			colour = "black",
+			size = 1,
+			stroke = 2
+		) +
+		coord_flip() +
+		scale_x_discrete(
+			name = "",
+			limits = rev
+		) +
+		scale_y_continuous(
+			name = "Gini of disposable income, 2007"
+		) +
+		theme(legend.position = "none")
+```
+
+:::
+
+::::
+
+## T-TESTS
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+- We can follow the same logic using inferential statistics
+	- Question: Are group/trait differences in our sample data systematic differences we are likely to observe in the population?
+- Accounting for uncertainty, we can assert how *significant* differences are between our groups
+- If we only have two groups/values: T-Test
+	- Different types: One sample, paired sample, independent sample
+		1. In R: `t.test(data$outcome_variable~data$group_variable)`
+		2. In Stata: `ttest outcome_variable, by(group_variable)`
+			- Different options apply ([R](https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/t.test), [Stata](https://www.stata.com/manuals/rttest.pdf))
+- Pre-conditions: 
+	1. Binary group variable (nominal)
+	2. (Quasi-)metric outcome
+:::
+::: {.column width="50%"}
+```{r}
+swiid_t <- swiid_continent |>
+	mutate(group = ifelse(continent == "Europe", "European", "non-European")) |>
+	sample_n(50)
+	
+swiid_ts <- swiid_t |>
+	group_by(group) |>
+	summarise(
+		mean = mean(gini_disp),
+		sd = sd(gini_disp),
+		n = sum(!is.na(gini_disp))
+	)
+
+eu_m <- as.numeric(round(swiid_ts[1,2], 2))
+eu_sd <- as.numeric(round(swiid_ts[1,3], 2))
+eu_n <- as.numeric(round(swiid_ts[1,4]))
+w_m <- as.numeric(round(swiid_ts[2,2], 2))
+w_sd <- as.numeric(round(swiid_ts[2,3], 2))
+w_n <- as.numeric(round(swiid_ts[2,4]))
+
+tt <- t.test(swiid_t$gini_disp~swiid_t$group, var.equal = TRUE)
+
+t_df <- tt$parameter
+t <- round(tt$statistic, 2)
+t_p <- scales::pvalue(tt$p.value)
+```
+
+Usually reported within text:
+
+"Performing a t-test for independent samples, European countries ($M=`r eu_m`$, $SD=`r eu_sd`$, $n=`r eu_n`$) compared to non-European countries ($M=`r w_m`$, $SD=`r w_sd`$, $n=`r w_n`$) demonstrated significantly lower income inequality ($t(`r t_df`)=`r t`$, $p`r t_p`$)."
+
+:::
+
+::::
+
+
+## ANOVA
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+```{r}
+ft <- summary(aov(gini_disp~continent, data = swiid_t))
+f <- round(ft[[1]][["F value"]][[1]], 2)
+fdf1 <- ft[[1]][["Df"]][[1]]
+fdf2 <- ft[[1]][["Df"]][[2]]
+fp <- scales::pvalue(ft[[1]][["Pr(>F)"]][[1]])
+```
+
+- If we have more than two groups, we need to perform ANOVA (**An**alysis **o**f **Va**riance)
+	- Theoretically, we can merge different variables to create $\lim_{k\to\infty}$ groups
+	- Practically, this is a bad idea
+- Generally, we test if differences between groups are significant (systematic)
+	1. In R: `aov(outcome_variable~group_variable, data = dataframe)`
+	2. In Stata: `anova outcome_variable group_variable`
+- ANOVA is not a direct test of significance of differences between specific groups
+	- Done with post-hoc tests (e.g., Bonferroni)
+- Can approach this graphically by comparing means and reporting uncertainty
+- Results usually, though, (also) reported within text:
+
+"Performing an ANOVA, significant differences in income inequality were found between the continents ($F(`r fdf1`, `r fdf2`)=`r f`$, $p`r fp`$)."
+
+Data source: @Solt2020
+:::
+::: {.column width="50%"}
+```{r}
+#| fig-height: 4
+#| fig-width: 6
+
+swiid_t |>
+	group_by(continent) |>
+	summarise(
+		mean = mean(gini_disp),
+		sd = sd(gini_disp),
+		n = sum(!is.na(gini_disp))
+	) |>
+	mutate(
+		se = sd / sqrt(n),
+		lci = mean - qt(1 - ((1 - 0.95) / 2), n - 1) * se,
+		uci = mean + qt(1 - ((1 - 0.95) / 2), n - 1) * se,
+	) |>
+	ggplot(aes(continent, mean, colour = continent)) +
+		geom_point(size = 1.5) +
+		geom_errorbar(aes(ymin = lci, ymax = uci), width = 0, lwd = 1) +
+		coord_flip() +
+		scale_x_discrete(
+			name = "",
+			limits = rev
+		) +
+		scale_y_continuous(name = "Gini of disposable income, 2007") +
+		theme(legend.position = "none")
+```
+:::
+
+::::
+
+## CORRELATION ANALYSIS
+
+- ANOVA and t-test mostly adequate with limited number of groups
+- Use to analyze relationship between metric variables not recommended/possible
+- Instead: Correlation analysis
+	- Also possible when variables are not metric
+- Identification of patterns in variance of two variables
+- Wealth of different measurements
+	- Most popular for analysis of two metric variables: ***Pearson's R***
+
+## PEARSON'S R
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+- Can be tested descriptively and inferentially (report uncertainty)
+	1. In R: `cor.test(data$variable1, data$variable2)`
+	2. In Stata: `pwcorr variable1 variable2, star(.05)`
+- Values between -1 and +1
+	- 0 = no correlation
+	- -1 = perfectly negative correlation
+	- +1 = perfectly positive correlation
+
+Data source: @Solt2020 and @CoppedgeEtAl2024
+:::
+::: {.column width="50%"}
+```{r}
+#| fig-height: 4
+#| fig-width: 6
+
+gin_gdp <- read.csv("res/swiid.csv") |>
+	rename(country_name = country) |>
+	mutate(country_name = ifelse(country_name == "United States", "United States of America", country_name)) |>
+	filter(year == 2019) |>
+	left_join(
+		vdem |>
+			filter(year == 2019) |>
+			select(country_name, e_gdppc)
+	) |>
+	filter(!is.na(gini_disp), !is.na(e_gdppc))
+
+ct <- cor.test(gin_gdp$gini_disp, gin_gdp$e_gdppc)
+
+title <- paste0(
+	"Correlation of economic inequality and wealth\nr =",
+	round(ct$estimate, 3),
+	", p",
+	scales::pvalue(ct$p.value),
+	", n = ",
+	sum(nrow(gin_gdp))
+)
+
+read.csv("res/swiid.csv") |>
+	rename(country_name = country) |>
+	mutate(country_name = ifelse(country_name == "United States", "United States of America", country_name)) |>
+	filter(year == 2019) |>
+	left_join(
+		vdem |>
+			filter(year == 2019) |>
+			select(country_name, e_gdppc)
+	) |>
+	ggplot(aes(e_gdppc, gini_disp)) +
+		geom_point() +
+		scale_x_continuous(
+			name = "GDP per capita (2019),\nin thousands (US$)",
+			limits = c(0,100),
+            expand = c(0,0)
+		) +
+		scale_y_continuous(name = "Gini of disposable income (2019)") +
+		labs(title = title)
+```
+:::
+
+::::
+
+## MULTIVARIATE ANALYSE
+
+- Most of the time, our interest is not limited to the relationship between two variables
+- For instance, we might want to find out about the different factors influencing a variable
+- Even when our interest is in a specific relationship between two variables, there might be other variables we have to account for
+- In these cases we have to perform multivariate analysis
+
+## DESCRIPTIVE GRAPHICS
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+- Graphically describing multivariate relationships is tricky
+	- Generally: The more variables, the more confusing
+- Two options of handling this:
+	1. Fine-grained graphics: Use different visualization strategies to present full information
+		- No/little loss of information at the price of unintuitive graphics
+	2. Condense information: Merge categories and variables
+		- Loss of information but rather intuitive graphics
+:::
+::: {.column width="50%"}
+```{r}
+#| fig-height: 4
+#| fig-width: 6
+
+data.frame(
+	xv = rnorm(500, 50, sd = 200),
+	yv = rnorm(500, 5000, sd = 1500),
+	col = factor(sample(c(1, 3, 5), 500, replace = TRUE)),
+	sha = factor(sample(c("A", "B", "C", "D"), 500, replace = TRUE)),
+	fx = sample(c(1, 10, 100), 500, replace = TRUE),
+	fy = sample(c(1, 2, 3), 500, replace = TRUE)
+) |>
+ggplot(aes(xv, yv, colour = col, shape = sha)) +
+	facet_grid(rows = vars(fx), cols = vars(fy)) +
+	geom_point()
+```
+:::
+
+::::
+
+## bsp condensed data
+
+```{r}
+#| fig-height: 2.5
+#| fig-width: 6
+
+data.frame(
+	yv = rnorm(500, 5000, sd = 1500),
+	col = factor(
+		sample(
+			c(
+				"very poor", 
+				"poor", 
+				"intermediate", 
+				"wealthy", 
+				"very wealthy"
+			),
+			500, 
+			replace = TRUE
+		),
+		levels = c(
+			"very poor", 
+			"poor", 
+			"intermediate", 
+			"wealthy", 
+			"very wealthy"
+		)
+	)
+)  |>
+ggplot(aes(col, yv)) +
+	geom_boxplot(size = .7, alpha = .2, outlier.shape = NA) +
+		geom_jitter(width = .2, size = .5) +
+		stat_summary(
+			fun = mean, 
+			geom = "point", 
+			shape = 4, 
+			colour = "red",
+			size = 1.5,
+			stroke = 2
+		) +
+		coord_flip() +
+		theme(axis.title = element_blank())
+```
+
+## REGRESSION ANALYSIS
+
+- Typically, we are better off to perform regression analysis
+- To a large extent, regression analysis mirrors ANOVA
+- Incredible wealth of variants for specific applications
+	- Most basic application: Linear regression
+		1. R: `lm(dependent_variable ~ independent_variable, data = dataframe)`
+		2. Stata: `reg dependent_variable independent_variable`
+- Regression is the core tool of modern quantitative social science
+	&rarr; So you should understand the logic behind it!
+
+## THE LOGIC OF REGRESSION ANALYSIS
+
+- We regress a trait we are interested in (dependent variable) on variables we assume to have an influence on it (predictors)
+- In (basic) linear regression, we estimate:
+	1. The slope associated with a predictor
+		- How much does DV change when predictor increases by 1 (category)?
+	2. The intercept of the dependent variable
+		- What is the (estimated) average value we observe when all predictors have a value of 0?
+	3. The model quality
+		- How well can our model explain the variance of the dependent variable?
+- Whenever we work with sampled data, we also estimate uncertainty associated to our parameter estimates
+	- Are influences likely to be found in the population as well?
+
+## HOW DOES IT WORK?
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+- Co-distribution of two variables is the basis of any regression
+- Calculating slope follows a simply logic in linear regression:
+	- **Least Squares** method; OLS = Ordinary least squares
+- Esentially, we are minimizing (squared) distance between model-based predictions and the observed values
+:::
+::: {.column width="50%"}
+```{r}
+#| fig-height: 4
+#| fig-width: 6
+
+reg_d <- rnorm_multi(
+        n = 20,
+        mu = c(5, 5),
+        sd = c(5, 5),
+        r = c(.75),
+        varnames = c("xv", "yv")
+    ) 
+
+reg <- lm(yv ~ xv, reg_d)
+
+reg_d <- reg_d |>
+	mutate(
+		pred_cor = reg$coefficients[1] + (reg$coefficients[2] * xv),
+		pred1 = 3 + (.3 * xv),
+		pred2 = 1 + (.95 * xv),
+	)
+
+reg_d |>
+	ggplot(aes(xv, yv)) +
+		geom_point() +
+		scale_x_continuous(name = "Predictor") +
+		scale_y_continuous(name = "Dependent variable")
+```
+:::
+
+::::
+
+## bsp reg falsch 1
+
+```{r}
+#| fig-height: 4
+#| fig-width: 6
+
+reg_d |>
+	ggplot(aes(xv, yv)) +
+		geom_point() +
+		geom_arrowsegment(aes(xend = xv, yend = pred1), colour = "red") +
+		geom_abline(slope = .3, intercept = 3) +
+		scale_x_continuous(name = "Predictor") +
+		scale_y_continuous(name = "Dependent variable")
+```
+
+## bsp reg falsch 2
+
+```{r}
+#| fig-height: 4
+#| fig-width: 6
+
+reg_d |>
+	ggplot(aes(xv, yv)) +
+		geom_point() +
+		geom_arrowsegment(aes(xend = xv, yend = pred2), colour = "red") +
+		geom_abline(slope = .95, intercept = 1) +
+		scale_x_continuous(name = "Predictor") +
+		scale_y_continuous(name = "Dependent variable")
+```
+
+## bsp reg correct
+
+```{r}
+#| fig-height: 4
+#| fig-width: 6
+
+reg_d |>
+	ggplot(aes(xv, yv)) +
+		geom_point() +
+		geom_arrowsegment(aes(xend = xv, yend = pred_cor), colour = "red") +
+		geom_abline(slope = reg$coefficients[2], intercept = reg$coefficients[1]) +
+		scale_x_continuous(name = "Predictor") +
+		scale_y_continuous(name = "Dependent variable")
+```
+
+## MULTIPLE REGRESSION
+
+- Regression offers us a chance to parallely test different variables' influence
+- In multiple regression, we estimate a variable's influence *ceteris paribus*
+	- Approximation to a variable's actual effect, other traits held constant
+- Regression also accounts for uncertainty
+	- The clearer a pattern (the better (+ the more) observations align) the smaller the chance of a non-systematic finding
+- Substantially, we can test an effect controlling for possible confounders
+	- Also possible to test interaction effects
+
+## MODIFICATIONS
+
+- The concept of regression has been adapted to various scenarios
+	- Binary outcomes (logistic regression)
+	- Hierarchical data (multi level regression)
+	- Panel data (e.g., fixed effects regression)
+	- Specific non-linear data (non-linear least squares)
+	- ...
+- The logic is always the same:
+	- Optimization of predictions (estimated values) ...
+	- ... against a given value (observed dependent variable most often) ...
+	- ... adjusting certain parameters (usually slopes assigned to predictors)
+
+## PRE-REQUISITES
+
+- Regression models are powerful tools in quantitative research
+- Valid estimates are subject to assumptions
+- For instance, linear regression models assume:
+	1. Variable relationships are linear
+		- Non-linear relationships need to be accounted for (e.g., squared terms for exponential effects)
+	2. Normally distributed variables
+		- Variables need to be centred around the mean (bell-shaped, unskewed distribution with kurtosis of 0)
+	3. No multicolinearity
+		- Control for other (overlapping) factors, without allowing for to much correlation
+	4. No autocorrelation
+		- DV does not depend on itself at other level of IV
+	5. Homoscedasticity
+		- Residuals (prediction error) equally large across different levels of IV
+- Each type of regression comes with its own assumptions
+
+
+## REPORTING REGRESSION RESULTS
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+- Most conventional way: table
+	- Report effects by presenting slopes
+	- (If sampled data) report uncertainty by presenting standard errors and indicating p-values
+	- Other model metrics like goodness-of-fit metrics (R^2^, RMSE, ...) and observations
+- Effect visualization is often helpful
+	- Little reason to visualize linear effects
+	- Effects in logistic regression hard to interpret without visualization
+	- Visualizing interaction effects (almost) a necessity [see @BramborEtAl2006]
+	- Polynomial effects also much easier to assess graphically
+
+Data source: @Solt2020 and @CoppedgeEtAl2024
+:::
+::: {.column width="50%"}
+```{r}
+#| fig-height: 4
+#| fig-width: 6
+
+rbind(
+	predictions(
+		lm(gini_disp~e_gdppc, data = gin_gdp),
+		newdata = datagrid(e_gdppc = seq(0,100,1))
+	) |>
+	mutate(type = "linear"),
+	predictions(
+		lm(gini_disp~poly(e_gdppc, 2, raw = TRUE), data = gin_gdp),
+		newdata = datagrid(e_gdppc = seq(0,100,.5))
+	) |>
+	mutate(type = "poly")
+) |>
+ggplot(aes(e_gdppc, estimate, colour = type, fill = type)) +
+geom_point(
+	data = gin_gdp, 
+	aes(e_gdppc, gini_disp), 
+	colour = "black", 
+	fill = "black"
+) +
+geom_line() +
+geom_ribbon(
+	aes(ymin = conf.low, ymax = conf.high), 
+	alpha = .3, 
+	colour = NA
+) +
+scale_x_continuous(
+	name = "GDP per capita (2019),\nin thousands (US$)",
+	expand = c(0,0)
+) +
+scale_y_continuous(
+	name = "Gini of disposable income (2019)",
+	limits = c(15, 55),
+	expand = c(0,0)
+) +
+scale_fill_manual(values = c("black", "blue")) +
+scale_colour_manual(values = c("black", "blue")) +
+theme(legend.position = "none")
+```
+:::
+
+::::
+
+## tabellenwerte
+
+```{r}
+summary(lm(gini_disp~e_gdppc, data = gin_gdp))
+summary(lm(gini_disp~poly(e_gdppc, 2, raw = TRUE), data = gin_gdp))
+```
+
+## graphik nur lin
+
+```{r}
+#| fig-height: 4
+#| fig-width: 6
+
+predictions(
+	lm(gini_disp~e_gdppc, data = gin_gdp),
+	newdata = datagrid(e_gdppc = seq(0,100,.5))
+) |>
+ggplot(aes(e_gdppc, estimate)) +
+geom_point(data = gin_gdp, aes(e_gdppc, gini_disp)) +
+geom_line() +
+geom_ribbon(aes(ymin = conf.low, ymax = conf.high), alpha = .3) +
+scale_x_continuous(
+	name = "GDP per capita (2019),\nin thousands (US$)",
+	expand = c(0,0)
+) +
+scale_y_continuous(
+	name = "Gini of disposable income (2019)",
+	limits = c(15, 55),
+	expand = c(0,0)
+)
+```
+
+## WHAT DOES (AND DOESN'T) REGRESSION OFFER
+
+- Regression does ***NOT*** magically offer causal identification for conventional data!
+- However, we can approximate the logic of causality:
+	1. Correlation
+		- Effects exist if correlation is present
+	2. Chronological sequence
+		- We often have a clear idea about the directionality
+		- Yet, we often lack information
+	3. No influence by third variables
+		- We can control for confounders, approaching the idea of *an otherwise identical world*
+		- Nevertheless, no chance of actually controlling for all confounders
+- Regression is a highly flexible method that allows for the often most adequate analysis of specific data and assumptions
+- Researchers should make an effort to substantially interpret effects
+	- On the other hand, uncertainty must not be neglected
+
+## WHAT ELSE IS THERE TO ANALYZE?
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+- Relationships between two variables are a frequent but by no means the only social science subject
+- For instance, social networks among the most natural subjects of social science
+	- Specific data and specific analysis framework (SNA)
+- Often, we are also interested in identifying certain structures within our data
+	- Structure in cases: Cluster analysis
+	- Structure in variables: Factor analysis
+:::
+::: {.column width="50%"}
+```{r}
+#| fig-height: 4
+#| fig-width: 6
+
+
+tsndf <- crossprod(
+	table(
+		read.delim("https://slcladal.github.io/data/romeo_tidy.txt", sep = "\t")[1:2]
+	)
+)
+diag(tsndf) <- 0
+as.data.frame(tsndf) |>
+	as.dfm() |>
+	fcm(tri = FALSE) |>
+	textplot_network(
+		edge_color = rgb(0, 97, 143, maxColorValue = 256),
+		vertex_labelsize = as.data.frame(tsndf) |>
+			as.dfm() |>
+			convert(to = "data.frame") |>
+			select(-doc_id) |>
+			rowSums() |>
+			log()
+	) +
+	theme(
+		panel.background = element_rect(
+            fill = rgb(248,246,245, maxColorValue = 256),
+            colour = rgb(248,246,245, maxColorValue = 256)
+        ), 
+        plot.background = element_rect(
+            fill = rgb(248,246,245, maxColorValue = 256), 
+            color = rgb(248,246,245, maxColorValue = 256)
+        )
+	)
+```
+
+:::
+
+::::
+
+## CLUSTER ANALYSIS
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+- Main idea: Based on the values they have in certain key traits, we can identify types ("clusters") in our observations
+- After definition of relevant traits, statistical software identifies these clusters
+- Number of clusters can be derived from theory or based on statistical criteria (e.g., Duda-Hart test)
+	- Idea: Is the fusion of two (or more) clusters worth the loss of information?
+	- Confirmatory methods available (latent class/profile analysis)
+- Can be a result on its own
+	- Example RQ: Which types of political systems are there?
+- Can be used for subsequent research
+	- Example RQ: Which types of media systems are there and do they have an influence on media consumption patterns?
+:::
+::: {.column width="50%"}
+```{r}
+#| fig-height: 4
+#| fig-width: 6
+
+data.frame(
+	eco = runif(1000, -5, 5),
+	gta = runif(1000, -5, 5),
+	id1 = 1,
+	id2 = 2
+) |>
+pivot_longer(!c(eco, gta)) |>
+select(eco, gta, value) |>
+mutate(
+	type = case_when(
+		eco <= 0 & gta >= 0 & value == 1 ~ "LA",
+		eco <= 0 & gta < 0 & value == 1 ~ "LL",
+		eco > 0 & gta >= 0 & value == 1 ~ "RA",
+		eco > 0 & gta < 0 & value == 1 ~ "RL",
+		eco >= -2.5 & eco <= 2.5 & gta <= 2.5 & gta >= -2.5 & value == 2 ~ "CE",
+		eco < 0 & gta > 0 & value == 2 ~ "LA",
+		eco < 0 & gta < 0 & value == 2 ~ "LL",
+		eco > 0 & gta > 0 & value == 2 ~ "RA",
+		eco > 0 & gta < 0 & value == 2 ~ "RL"
+	),
+	clusters = ifelse(value == 1, "4 clusters", "5 clusters")
+) |>
+ggplot(aes(eco, gta, colour = type)) +
+	facet_wrap(~clusters) +
+	geom_hline(yintercept = 0) +
+	geom_vline(xintercept = 0) +
+	geom_point() +
+	scale_colour_manual(
+		values = c(
+			"grey30",
+			"red",
+			"limegreen",
+			"blue",
+			"orange"
+		)
+	) +
+	scale_x_continuous(
+		name = "Economic axis",
+		expand = c(0,0),
+		labels = NULL
+	) +
+	scale_y_continuous(
+		name = "Socio-cultural axis",
+		expand = c(0,0),
+		labels = NULL
+	) +
+	theme(legend.position = "none")
+```
+:::
+
+::::
+
+## FACTOR ANALYSIS
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+- Key interest: Patterns among variables; *latent variables*
+- **Idea**: Often we can not directly measure high-level concepts (*factors*) but only symptoms of them
+	- For example, we often use multiple survey items, which correspond to a single concept (e.g., populism)
+- Examining relationships between these variables, we try to identify these structures
+- How many factors are there and which *factor loadings* do we observe?
+	- Factor loading: How (strongly) does a variable predict a factor's value?
+:::
+::: {.column width="50%"}
+grafik mit zwei latvars
+:::
+
+::::
+
+## FACTOR ANALYSIS -- APPLICATION
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+- Define variables of interest
+- Two possible routes: Exploratory and confirmatory
+- **Exploratory**:
+	- No specific assumptions about how many factors there are
+	- No specific assumptions about *factor loadings*
+	- Results mostly derived from somewhat liberal statistical criteria
+	- "It’s what the data get into when theory goes on holiday" (Author unknown)
+- **Confirmatory**:
+	- Specific assumptions about number and structure of factors
+	- Results (identification) derived from strict statistical criteria
+	- Structural equation modeling; can be used in complex multistage models
+:::
+::: {.column width="50%"}
+grafik mit conf und expl
+:::
+
+::::
+
+## INFERENCE WITHOUT STATISTICS
+
+- Statistics vital but not only tool for inference
+- Detailed analysis of specific cases often (equally) important
+- Combining large-n analysis and case studies (*nested analysis*) often valuable see [@Rohlfing2008]
+- Case selection crucial [see @SeawrightGerring2008]
+- Case studies themselves can be powered by statistical methods [e.g., Synthetic control method, @AbadieEtAl2015]
+
+## DATA ANALYSIS -- CONCLUSION
+
+- The type of data you have determines the methods you apply
+- All methods come with their own biases
+	- Check your results for robustness by applying different methods
+	- Do not let (unexpected) results dictate the methods you apply; refrain from *p-hacking*!
+- Performing descriptive analysis can help in estimating type II error probability
+	- (Usually) non-quantifiable, but important to discuss likelihood of false negative
+- Adequate combinations of large-n analyses and case studies can be highly valuable
+- Collected data and analysis have to match and are both guided by theory
+
+## DATA ANALYZED -- SO?
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+- Does your analysis match your theoretical assumptions?
+- Identify the *story* to tell with your data [see @Alexander2023]
+	&rarr; Goal: No over-/under-selling!
+:::
+::: {.column width="50%"}
+grafik bis zu rückkopplung theorie
+:::
+
+::::
+
+## CONCLUSION -- INITIAL STEPS
+
+- What are you interested in?
+- What do we already know? Where do we lack insight?
+- Address your research gap with a concise question!
+
+## CONCLUSION -- THEORETICAL FRAMEWORK
+
+- Locate your research within the greater field
+- Connect your question to pre-existing studies/knowledge
+- Which assumptions are plausible?
+
+## CONCLUSION -- RESEARCH DESIGN
+
+- Conceptualize your central phenomena
+	- *What are you even talking about?*
+- Operationalize your central phenomena
+	- How can you measure them?
+- Identify your cases
+	- Find the appropriate units
+	- Construct a sampling strategy if necessary
+- Contextualize what you want to research
+	- Are there any intervening variables you need to measure?
+
+## CONCLUSION -- DATA COLLECTION
+
+- Which type of data do you need to answer your question
+- Decide for the method(s) by which you collect your data
+- Aim for **reliable**, **valid**, and **complete** data
+
+## CONCLUSION -- EXPERIMENTS & CAUSALITY
+
+- Be aware of the difference between correlation and causality
+- Your data needs to reflect your interest
+- (Randomized) experiments most valid path to causal inference
+
+## CONCLUSION -- DATA ANALYSIS
+
+- Gigantic amount of analysis methods
+- Applied methods determined by theory and type of data
+	- Shape of your data (e.g., qualitative/quantitative) and measurement levels
+- Be aware of the range of your claims
+	- Report uncertainty when generalizing!
+- Test robustness
+
+## CONCLUSION -- WRITING
+
+- Good research follows a clear agenda
+- Systematically derived research question gets connected to broader literature in strong theoretical framework
+- Consistent conceptualization and data collection
+- Matching and comprehensive statistical analysis
+	- Rigorous and convincing interpretation; rejoins theory
+
+## FINAL QUESTIONS?
+
+Do you have any final questions left?
+
+## HOW ABOUT YOU?
+
+What are you taking away from this primer? What did you learn? What was good? What needs to be improved? &rarr; Discuss with a partner!
+
+## CONCLUSION -- OVERALL
+
+- The more stringent the research, the more valuable
+- Any decision is consequential
+- Broad methods knowledge ensures that you can avoid poor compromises in your own work
+- It also helps with critical evaluation of the studies you read
+
+- Empirical research does not work without a solid grip of its methods
+	&rarr; Continue to invest time and effort!
+
+## LITERATURE

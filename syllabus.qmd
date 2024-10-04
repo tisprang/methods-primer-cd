@@ -1,0 +1,62 @@
+---
+format:
+  ffm-syllabus-pdf: default
+babel-lang: american
+
+title: "Methods Primer"
+author: "Timo Sprang, M.A."
+term: "Winter Term 2024/2025"
+
+email: "sprang@soz.uni-frankfurt.de"
+modul: "MA Comparative Democracy"
+time: "October 10^th^--11^th^"
+office: "PEG 3.G 095"
+classroom: "PEG 1.G 107 | SH 1.107"
+sprechstunde: "on demand"
+
+reference-section-title: "Content"
+---
+
+# Background
+
+The MA Comparative Democracy is a research-focused program aiming to provide students with cutting-edge theoretical, methodological, and empirical skills and knowledge. In terms of methods, the course program offers two advanced introductions into different kinds of research designs and approaches (held by [Prof. Wagemann](https://www.fb03.uni-frankfurt.de/137509869/Prof__Dr__Claudius_Wagemann) and [Prof. Ruhe](https://www.fb03.uni-frankfurt.de/73741943/Prof__Dr__Constantin_Ruhe)). This short, 1.5 day course is a voluntary, non-degree course that we offer before the start of the semester as a methods refresher/methods prep-course. The idea is that we assume that all students will have different backgrounds and training in research designs and methods, and empirical-analytical research in general. Some will be very advanced, others might have training in some but not other methods, still others might not have a good overview on different designs and their relevance in the first place. This course will take stock of students' skills and walk through the basics of good scientific practice based also on students' skills and needs. While it is a voluntary program that you do not have to participate in, we highly recommend that you participate, especially if you are not familiar yet or do not feel comfortable with research designs and statistical analysis. There will be no exams or tests, this is only about helping you achieve the best possible skills and knowledge and preparing you well for the course program.
+
+# Goals
+
+This course aims to create a common basis for empirical research in the social sciences. Initially, we will therefore learn about some fundamental concepts that are vital to any type of research that we find in the social sciences. What is a variable? How do we collect which type of data? What about causality? What is a (relevant) case? Doing this will increase students' capabilities to understand the methodological aspects taught in this master's program. Moreover, it should activate their abilities to critically read and understand empirical research. Finally, students will also profit by being enabled to perform basic empirical research themselves.
+
+# Schedule and organization
+
+We meet twice: once on October 11^th^ from 14^00^ to 17^00^ in room 1.G 107 in the PEG building and then on October 12^th^ from 10^00^ to 17^00^. Participation is not mandatory but highly recommended. There will be breaks for snacks and/or lunch. Materials will be published via [OLAT](https://olat-ce.server.uni-frankfurt.de/olat/auth/RepositoryEntry/22609723402).
+
+```{r}
+#| label: overview
+
+data.frame(
+    day = c(1, 2),
+    date = c(
+      "10/10/24",
+      "10/11/24"
+    ),
+    topic = c(
+      "Introduction and basic concepts",
+      "Data, analysis and research paradigms"
+    )
+  ) |>
+  knitr::kable(
+    col.names = c("Day", "Date", "Topic"),
+    align = c("c", "c", "l"),
+    booktabs = TRUE,
+    linesep = ""
+  ) |>
+  kableExtra::row_spec(0, bold = TRUE) |>
+  kableExtra::kable_styling(position = "center")
+```
+
+# \textcolor{gublue}{11\textsuperscript{th} of October, 14\textsuperscript{00}--17\textsuperscript{00}: Introduction and basic concepts}
+
+In this session, we will get to know each other and talk about the different backgrounds we have regarding empirical research. After this introduction, we are going to start at the very beginnings. You will only conduct relevant research and be able to identify it, if you know what it is. We are going to discuss this. Based on this, we are going to start our tour around a step-by-step guide about how to perform empirical research. You will likely find that many of the aspects we take for granted actually deserve increased attention.
+
+# \textcolor{gublue}{12\textsuperscript{th} of October, 10\textsuperscript{00}--17\textsuperscript{00}: Data, analysis and research paradigms}
+
+With the basics clear, we are going to get into the detailed quirks of empirical research. Our findings are usually based on the analysis of data. But why? And what even is data? These questions are going to introduce us to the plethora of different analytical methods. Finally, we are going to talk about what you should and should not do, once you have analysed your data. Reflecting the past two days, we are finally going to wrap it up and take some time to answer your questions.

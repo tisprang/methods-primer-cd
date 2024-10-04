@@ -1,0 +1,680 @@
+---
+title: "METHODS PRIMER -- DAY 1"
+author: "Timo Sprang, M.A."
+babel-lang: ngerman
+format:
+    pptx:
+        reference-doc: ../template.pptx
+fig-dpi: 300
+
+bibliography: ../refs.bib
+csl: ../apa.csl
+---
+
+```{r}
+#| label: setup
+
+library(gufunctions)
+library(dplyr)
+library(stringr)
+library(ggplot2)
+library(forcats)
+library(tidyr)
+library(vdemdata)
+library(rnaturalearth)
+library(faux)
+
+set.seed(1337)
+theme_set(theme_gu())
+```
+
+
+## TODAY'S SCHEDULE
+
+HIER TABELLE MIT GLIEDERUNG
+
+## ABOUT ME
+
+- Studied Political Science and Communication Science at Mainz
+- Doctoral researcher at [Julian Garritzmann's](https://www.fb03.uni-frankfurt.de/42422317/Prof__Dr__Julian_Garritzmann) chair
+- Research interests: Coalition and opposition politics, political and economic inequality, media systems
+
+## ABOUT THIS PRIMER
+
+- Basic introduction into social science's methods
+- Presentation of standard concepts you need to know for this program
+    1. What is a variable?
+    2. How to collect which type of data?
+    3. What about causality?
+    4. When do I need to employ heteroscedasticity-robust standard errors when performing Monte Carlo Simulations in mediation analysis?
+        &rarr; Not really, but the goal is to prepare you for being able to understand these types of questions!
+
+## HOW ABOUT YOU?
+
+1. Who are you?
+2. What is your academic background? What prior knowledge do you have about social science's methods?
+3. Do you have any specific research interests?
+4. What do you expect from this primer?
+
+## PURPOSE OF THIS PRIMER
+
+- Prepare you for methods classes in the master's program
+- Activate and increase your knowledge about empirical research
+- Boost your ability to critically read and understand empirical studies
+
+- Get you interested in empirical research and statistics
+
+*IMPORTANT*: Please ask any questions the moment they come to your mind. This will directly influence how much you benefit from this primer and how interesting it will be for you. Additionally, how much fun you will have during your Master's program will directly depend on how good your grasp of empirical research is -- so give yourself the best chance to understand as much as possible!
+
+## PERFORMING EMPIRICAL RESEARCH
+
+:::: {.columns}
+
+::: {.column width="50%"}
+![](res/iso_weird.jpg)
+:::
+
+::: {.column width="50%"}
+- What even is *empirical research*?
+- How do you conduct it?
+- What do you need to begin performing empirical research?
+
+&rarr; Discuss with a partner!
+
+Image source: https://shorturl.at/OBisB
+:::
+
+::::
+
+## EMPIRICAL RESEARCH -- THE BEGINNINGS
+
+:::: {.columns}
+
+::: {.column width="50%"}
+- Empirical research always starts with a question
+- A question about...?
+    &rarr; Something we do not know yet
+- Good news! What do we know?
+
+Image source: https://shorturl.at/pzFZt
+:::
+
+::: {.column width="50%"}
+![](res/popper_nothing.jpg)
+:::
+
+::::
+
+## RESEARCH QUESTIONS
+
+- A good research question can be motivated by a (personal) research interest
+- However, unlike an abstract research interest, it has to ...
+    - ... systematically address a research gap
+    - ... be precise and unambiguous
+- Just because a research question has already been answered in the past does not mean there are no more gaps around it!
+
+## RESEARCH GAPS -- AN EXAMPLE
+
+:::: {.columns}
+
+::: {.column width="50%"}
+- Modernization theory claims that...?
+    &rarr; Wealthier countries are more democratic [see @Lipset1959]
+- So, are they?
+    - Research is somewhat inconclusive [see @PrzeworskiLimongi1997]
+:::
+
+::: {.column width="50%"}
+TABELLE ZU VERGLEICH WAHRSCHEINLICHKEIT ARM INTERMEDIATE REICH DEMOKRATIE AUTOKRATIE
+:::
+
+::::
+
+## RESEARCH GAP IDENTIFICATION
+
+:::: {.columns}
+
+::: {.column width="50%"}
+- After systematic literature review, you will typically find different types of gaps
+
+1. **Theoretical gap**: A certain theory or theoretical aspect has been disregarded
+    - For example, @Lipset1959 does not account for U-shaped correlations; @PrzeworskiLimongi1997 do
+
+2. **Methodological gap**: Aspects about how the question was investigated are *off* in prior research
+    - For example, the modern V-Dem data [@CoppedgeEtAl2024] offers the best ever estimate about how democratic countries are
+
+3. **Empirical gap**: Lacking information about relevant aspects
+    - For example, @Lipset1959 is by nature bound to miss out on important democratization developments like the collapse of the Soviet Union
+
+- Identifying these gaps is the basis for formulating relevant research questions
+    - It is (almost always) spurred by prior research; *On the shoulder of giants*
+:::
+
+::: {.column width="50%"}
+BEISPIELE EINSETZEN
+:::
+
+::::
+
+## beispiel 1
+
+```{r}
+data.frame(
+            mod = seq(0,2,.01),
+            Democracy = seq(0,1,.005)
+        ) |>
+        mutate(Autocracy = (mod - 1)^2) |>
+        pivot_longer(cols = c(Democracy, Autocracy), names_to = "Regime") |>
+        ggplot(aes(mod, value, colour = Regime)) +
+            geom_line(lwd = 3) +
+            scale_x_continuous(
+                name = "Wealth",
+                breaks = seq(0,2,.5),
+                labels = c("low", rep("", 3), "high"),
+                expand = c(0,0)
+            ) +
+            scale_y_continuous(
+                name = "Stability",
+                breaks = seq(0,1,.25),
+                labels = c("low", rep("", 3), "high"),
+                expand = c(0,0)
+            )
+```
+
+## beispiel 2
+
+```{r}
+vdem |>
+        select(country_name, year, v2x_polyarchy, v2x_regime, e_gdppc) |>
+        filter(year == 2019) |>
+        mutate(Regime = ifelse(v2x_regime > 1, "Democracy", "Autocracy")) |>
+        ggplot(aes(e_gdppc, v2x_polyarchy)) +
+            geom_point(aes(fill = Regime, colour = Regime), size = 3) +
+            geom_smooth(method = "lm") +
+            coord_cartesian(ylim = c(0, 1)) +
+            scale_x_continuous(
+                name = "GDP per capita (2019),\nin thousands (US$)",
+                limits = c(0,100),
+                expand = c(0,0)
+            ) +
+            scale_y_continuous(
+                name = "V-Dem electoral democracy index (2019)",
+                expand = c(0,0)
+            )
+```
+
+## beispiel 3
+
+```{r}
+ne_countries(scale = "medium", returnclass = "sf") |>
+        left_join(
+            vdem |>
+                select(e_gdppc, year, country_name) |>
+                filter(
+                    year == 2000,
+                    country_name %in% c(
+                        "Poland",
+                        "Czechia",
+                        "Slovakia",
+                        "Hungary",
+                        "Romania",
+                        "Bulgaria",
+                        "Lithuania",
+                        "Latvia",
+                        "Estonia",
+                        "Belarus",
+                        "Ukraine",
+                        "Moldova",
+                        "Russia",
+                        "Georgia",
+                        "Armenia",
+                        "Azerbaijan",
+                        "Kazakhstan",
+                        "Uzbekistan",
+                        "Turkmenistan",
+                        "Kyrgyzstan",
+                        "Tajikistan",
+                        "Mongolia"
+                    )
+                ) |>
+                rename(sovereignt = country_name),
+            by = "sovereignt"
+        ) |>
+        filter(!is.na(e_gdppc)) |>
+        ggplot(aes(fill = e_gdppc)) +
+            geom_sf(col = "grey30") +
+            coord_sf(expand = FALSE) +
+            scale_x_continuous(limits = c(12, 180)) + 
+            scale_y_continuous(limits = c(35, 82)) +
+            scale_fill_gradient(
+                name = "GDP per capita (2000),\nin thousands (US$)",
+                limits = c(0,25),
+                low = "white",
+                high = "firebrick"
+            ) +
+            labs(
+                caption = "Note. Map data is retrieved from Natural Earth Project, which classifies Crimea as a Russian territory.\nIt neither represents official sources, like the UN, nor the author's opinion."
+            ) +
+            theme(
+                axis.text = element_blank(),
+                legend.key.width = unit(3, "cm")
+            )
+```
+
+## RESEARCH GAP -- PRACTICE
+
+- With a partner, formulate a fitting research question for the following gaps:
+
+1. The modernization theory has only been tested until the 1960s
+    &rarr; *Are wealthier countries more democratic even after 1960?*
+
+2. We do not know what drives swing voters' decisions in the United States in presidential elections
+    &rarr; *Which factors drive swing voters' decisions in US presidential elections?*
+
+3. It is unclear how the European Union promotes peace among its members
+    &rarr; *How does the EU contribute towards peace among its members?*
+
+## GAP IDENTIFIED -- NOW WHAT?
+
+:::: {.columns}
+
+::: {.column width="50%"}
+GRAFIK VON GAP IDENTIFIC BIS THEORIE FRAMEWORK
+
+:::
+
+::: {.column width="50%"}
+- After you identified a gap in the research, it is time that you connect your research problem with scholarly discourse
+:::
+
+::::
+
+## THEORETICAL FRAMEWORK
+
+- You can directly apply a theory
+    - Test whether wealthier countries are more democratic
+- You can specifically test a theory by breaking it down into specific hypotheses
+    - Are countries with a higher rate of shareholders more democratic?
+- You can develop existing theories by adapting them to more specific contexts
+    - Are wealthier post-communist countries more democratic *if they border stable democracies*?
+
+## ENTERING RESEARCH DESIGN
+
+:::: {.columns}
+
+::: {.column width="50%"}
+- If you have come to this point, you have collected the key to research designs
+- From here on out, you will face critical concepts of empirical research left, right, and center
+    - So let's get to know or rejoin them!
+:::
+
+::: {.column width="50%"}
+GRAFIK BIS RESEARCH DESIGN
+
+:::
+
+::::
+
+## CONCEPTUALIZATION & OPERATIONALIZATION
+
+- Once you are set on what you want to know, it is time to conceptualize your research
+- Start thinking about what traits you need to observe
+- **Conceptualization**: What is the trait theoretically (as compared to related ones)?
+- **Operationalization**: How can the trait be measured?
+
+## CASE SELECTION
+
+- A case is a unit in which you observe the relevant traits of your research question
+- Case selection has to correspond to your research question
+- Let's do some practice:
+
+- **RQ~1~** Are wealthier countries more democratic?
+    &rarr; Countries
+- **RQ~2~** Are centrist political parties more fond of democracy than radical ones?
+    &rarr; Political parties
+- **RQ~3~** Is democratic support higher among wealthier people?
+    &rarr; Individuals
+
+## DIFFERENT LEVELS
+
+- The examples from the previous slide correspond to different observational levels
+    - Individuals -- Micro level
+    - Political party -- Meso level
+    - Countries -- Macro level
+- Important to be aware of these levels when conducting research
+    - Level needs to conform to the research question
+    - Not always possible to collect data on appropriate level
+
+## ECOLOGICAL INFERENCE AND ECOLOGICAL FALLACIES
+
+:::: {.columns}
+
+::: {.column width="50%"}
+- If the traits we are interested in are observable in micro level units, we should employ them as cases
+    - However, this is not always possible
+- Sometimes, we are only able to observe traits in aggregated form on higher level units
+    - In these cases we are trying to achieve *ecological inference*
+- Important to comply with *Coleman's bathtub/boat* model in these cases [see @Coleman1990]
+:::
+
+::: {.column width="50%"}
+COLEMAN MODEL HERE
+:::
+
+::::
+
+## HOW TO AVOID ECOLOGICAL FALLACIES
+
+:::: {.columns}
+
+::: {.column width="50%"}
+- Assume we want to find out whether high income voters preferred Biden or Trump
+    - In this example, we need to be quick and unfortunately do not have individual level data on wealth and vote choice
+    - We thus refer to state level data on personal income [@USBureauofEconomicAnalysis2024] and election results
+:::
+
+::: {.column width="50%"}
+
+```{r}
+#| fig-height: 4
+#| fig-width: 6
+
+read.csv("res/voting.csv") |>
+    left_join(
+        read.csv("res/gdp.csv") |>
+            mutate(state = str_replace(GeoName, " \\*", "")) |>
+            select(X2018, state)
+    ) |>
+    mutate(
+        dif = trump_pct - biden_pct,
+        col = ifelse(dif < 0, "dnc", "gop")
+    ) |>
+    ggplot(aes(fct_reorder(state_abr, X2018), dif, fill = col)) +
+        geom_bar(stat = "identity") +
+        coord_flip() +
+        scale_y_continuous(
+            name = "2020 Election result",
+            limits = c(-100, 100),
+            expand = c(0,0)
+        ) +
+        scale_x_discrete(
+            name = "States ordered by personal income",
+            guide = guide_axis(n.dodge = 2)
+        ) +
+        scale_fill_manual(
+            name = "Winner",
+            values = c("blue", "red"),
+            labels = c("Biden", "Trump")
+        )
+```
+
+:::
+
+::::
+
+## ECOLOGICAL FALLACIES IN ACTION
+
+- However, by actually looking at micro level data, results are less clear, maybe even tendency towards Trump for wealthier voters
+- State level findings are incompatible &rarr; **ecological fallacy**
+- To avoid this, we should AT LEAST have strong assumptions about *macro-micro-macro structure*
+    - Here: What is micro level expression of state level income, how does it affect individual level vote choice and how does this affect state level results
+
+
+## WHEN IS A CASE A CASE?
+
+- Of course there can also be multiple observations per unit
+    - In statistical analysis a case might then be the observation of unit $i$ at time $t$
+    - Accordingly, there can be multiple cases per unit
+    - For instance, observations of Germany's wealth and democracy level in 2010, 2011, and 2012 can be seen as distinct cases regarding modernization theory
+- What matters is that a case is informative about the traits we are interested in
+
+## WHICH CASES TO RESEARCH
+
+:::: {.columns}
+
+::: {.column width="50%"}
+- Rarely can we research our question on all relevant cases, *the population*
+    - Even rarer, is it worth it to do so
+- More common to focus on key cases or to draw (representative) samples
+    - Consequential for validity of our conclusions
+    - Best case: Completely random selection based on (known) population
+    - Problems: (Systematic) non-response; otherwise unknown selection probability
+:::
+
+::: {.column width="50%"}
+beispiel grafiken sample hiernach
+:::
+
+::::
+
+## non sampled beispiel
+
+```{r}
+dfsamp <- rnorm_multi(
+    n = 5000,
+    mu = c(15, 8),
+    sd = c(3, 7),
+    r = c(.65),
+    varnames = c("xv", "yv")
+) |>
+mutate(sample = rbinom(5000, 1, .1))
+
+dfsamp |>
+    ggplot(aes(xv, yv)) +
+        geom_point() +
+        geom_smooth(method = "lm", alpha = 0) +
+        scale_y_continuous(name = "Result") +
+        scale_x_continuous(name = "Treatment")
+```
+
+## sample beispiel graph
+
+```{r}
+dfsamp |>
+    ggplot(aes(xv, yv, colour = as.factor(sample))) +
+        geom_point() +
+        geom_smooth(colour = "blue", method = "lm", alpha = 0) +
+        geom_smooth(
+            data = dfsamp |> filter(sample == 1),
+            method = "lm",
+            fill = "red",
+            alpha = .3
+        ) +
+        scale_colour_manual(
+            values = c("black", "red")
+        ) +
+        scale_y_continuous(name = "Result") +
+        scale_x_continuous(name = "Treatment") +
+        theme(legend.position = "none")
+```
+
+## CASE IDENTIFIED -- NOW WHAT?
+
+- Any case is made up of countless numbers of traits
+- Operationalization makes us zoom in on the core traits we need to observe to answer our question
+- Traits we are interested in nearly exclusively **variables**
+- Cases can also have traits that are **constants**
+
+## VARIABLES AND CONSTANTS
+
+- Generally, variables vary, constants do not
+    &rarr; Find examples for both
+- Depending on the scope of our research, the same trait can be both
+- For example, if we are interested in how wealth impacts the level of democracy:
+    - Zooming in on a single country, its official name in 1975 will be a constant
+    - Looking at it internationally, the official name in 1975 varies between our cases
+
+## ABOUT VARIABLES
+
+:::: {.columns}
+
+::: {.column width="50%"}
+- In research, we usually try to explain the variance of one variable with that of another one
+- Variables can vary in different ways, depending on the level of measurement
+:::
+
+::: {.column width="50%"}
+GRAPHIC EXPLAINING NOMINAL ORDINAL INTERVAL RATIO
+:::
+
+::::
+
+## MEASUREMENT LEVELS
+
+:::: {.columns}
+
+::: {.column width="50%"}
+- Relevant order of these levels: **NOIR**
+- Anything can be measured at a nominal level and higher levels can always be transformed to lower ones
+- Level of information rises with level of measurement
+- Analysis methods have to fit level of measurement
+:::
+
+::: {.column width="50%"}
+- Which level are these variables measured on?
+1. Income
+2. Level of education
+3. Gender
+4. Electoral turnout
+5. Satisfaction with democracy
+:::
+
+::::
+
+## DIFFERENT TYPES OF VARIABLES
+
+:::: {.columns}
+
+::: {.column width="50%"}
+- Research typically establishes relationships between two (or more) variables
+- Consequentially, we usually try to explain the variance of a dependent variable $Y$ with that of an independent one $X$
+- Often, we have to account for variables $Z$ intervening in different ways
+- With these relationships, we often make assumptions about causality (more on that tomorrow)
+:::
+
+::: {.column width="50%"}
+GRAFIK ZU VERSCHIEDENEN VARIABLENVERHÄLTNISSEN
+:::
+
+::::
+
+## DEPENDENT AND INDEPENDENT VARIABLES
+
+- Dependent variables are the 'results' we are interested in
+- Independent variables are the traits we assume to have an influence on our result; *treatment*
+- If this is valid, we will observe *covariance*
+    - Specifically, variance of our result needs to align with variance of our treatment
+
+## INTERVENING VARIABLES
+
+:::: {.columns}
+
+::: {.column width="50%"}
+- Sometimes, the relationship between $X$ and $Y$ is more complex
+- For instance, there might be other factors, that exert influence on $Y$ themselves
+    - Not controlling for them can lead to biased results; *Simpson's paradox*
+- Other times, $X$ might actually only affect $Y$ via its influence on $Z$; mediation
+    - Mediation can be partial or full
+- Modernization theory is a good example for mediation. Why?
+:::
+
+::: {.column width="50%"}
+```{r}
+
+rbind(
+    rnorm_multi(
+        n = 500,
+        mu = c(3, 7),
+        sd = c(2, 2),
+        r = c(.65),
+        varnames = c("xv", "yv")
+    ) |>
+    mutate(gr = "A"),
+    rnorm_multi(
+        n = 500,
+        mu = c(9, 2),
+        sd = c(2, 2),
+        r = c(.65),
+        varnames = c("xv", "yv")
+    ) |>
+    mutate(gr = "B")
+) |>
+ggplot(aes(xv, yv, colour = gr, fill = gr)) +
+    geom_point() +
+    geom_smooth(method = "lm") +
+    geom_smooth(method = "lm", fill = "black", colour = "black") +
+    scale_y_continuous(name = "") +
+    scale_x_continuous(name = "") +
+    theme(legend.position = "none")
+
+```
+:::
+
+::::
+
+## MODERATION
+
+:::: {.columns}
+
+::: {.column width="50%"}
+- In some instances, $X$'s influence on $Y$ might also depend on some factor $Z$
+- In these cases  $Z$ acts as a *moderator* and *interacts* with $X$
+- Some effects are only present if a specific condition is fulfilled
+    - Testing this is possible in moderation analysis
+    - Often, it is necessary as we might produce entirely wrong results in the worst case
+:::
+
+::: {.column width="50%"}
+
+```{r}
+rbind(
+    rnorm_multi(
+        n = 500,
+        mu = c(5, 5),
+        sd = c(4, 4),
+        r = c(.8),
+        varnames = c("xv", "yv")
+    ) |>
+    mutate(gr = "A"),
+    rnorm_multi(
+        n = 500,
+        mu = c(5, 5),
+        sd = c(4, 4),
+        r = c(-.8),
+        varnames = c("xv", "yv")
+    ) |>
+    mutate(gr = "B")
+) |>
+ggplot(aes(xv, yv, colour = gr, fill = gr)) +
+    geom_point() +
+    geom_smooth(method = "lm") +
+    geom_smooth(method = "lm", fill = "black", colour = "black") +
+    scale_y_continuous(name = "") +
+    scale_x_continuous(name = "") +
+    theme(legend.position = "none")
+```
+:::
+
+::::
+
+
+
+## VARIABLES IN EMPIRICAL RESEARCH
+
+- Empirical research usually based on different variables' relations
+- Important to precisely point out which relations should be expected between focal variables
+- Any potentially relevant variable should be observed and measured during data collection
+- Data analysis needs to reflect expected relations between variables
+- Typically, the expectations regarding the variable relationships are recorded as *hypotheses*
+
+## WHAT NEXT?
+
+- To this point, you have ...
+1. ... identified a gap in the literature
+2. ... formulated a fitting research question
+3. ... identified the relevant cases
+4. ... operationalized the key traits you need to observe
+- So what comes next?
+    &rarr; Data collection! Tomorrow.
+
+## LITERATURE
