@@ -371,7 +371,7 @@ https://shorturl.at/u3CpB
 	1. How high is $Y$?
 	2. Is $X$ related to $Y$?
 - Nothing wrong with this type of research
-	- In fact some of the most important contributions to our knowledge can be classified as descriptive research
+	- In fact, some of the most important contributions to our knowledge can be classified as descriptive research
 	- For instance, we would know much less about economic inequality without Solt's [-@Solt2020] SWIID
 
 :::
@@ -381,7 +381,9 @@ https://shorturl.at/u3CpB
 
 - Claims and tests causal relationship
 - Interested in $X$'s effect on $Y$
-- Typical question: Does $X$ have an influence on $Y$?
+- Typical questions: 
+	1. Does $X$ have an influence on $Y$?
+	2. Which $X$'s explain $Y$?
 - Dramatic increase in popularity as of late
 - Requires specific tools
 
@@ -422,7 +424,7 @@ https://shorturl.at/QjCnL
 	1. Correlation &check;
 		- Possible to identify correlation
 	2. Chronological sequence ~
-		- Limited in standard cross-section data; (partially) possible with panel/time-section data
+		- Limited in standard cross-section data; (partially) possible with panel/time-series data
 	3. No influence by third variables &cross;
 		- Possible to measure and control for (some) third variables; (almost) never all of them
 	4. Strong theoretical justification &check;
@@ -1613,7 +1615,7 @@ reg_d |>
 	2. Normally distributed variables
 		- Variables need to be centred around the mean (bell-shaped, unskewed distribution with kurtosis of 0)
 	3. No multicolinearity
-		- Control for other (overlapping) factors, without allowing for to much correlation
+		- Control for other (overlapping) factors, without allowing for too much correlation
 	4. No autocorrelation
 		- DV does not depend on itself at other level of IV
 	5. Homoscedasticity
